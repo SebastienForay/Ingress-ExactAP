@@ -1,13 +1,13 @@
-﻿using System;
-using System.ComponentModel;
+﻿
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
 namespace Fr.Fisher01.IngressExactAp.Views
 {
-    public partial class AboutPage : ContentPage
+    [XamlCompilation(XamlCompilationOptions.Compile)]
+    public partial class SettingsView : ContentPage
     {
-        public AboutPage()
+        public SettingsView()
         {
             InitializeComponent();
         }

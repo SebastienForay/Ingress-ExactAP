@@ -1,19 +1,17 @@
-﻿using Fr.Fisher01.IngressExactAp.Services;
-using Fr.Fisher01.IngressExactAp.Views;
-using System;
+﻿using Fr.Fisher01.IngressExactAp.ViewModels;
 using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
 
 namespace Fr.Fisher01.IngressExactAp
 {
     public partial class App : Application
     {
-
         public App()
         {
             InitializeComponent();
 
-            DependencyService.Register<MockDataStore>();
+            DependencyService.RegisterSingleton(new CalculatorViewModel());
+            DependencyService.RegisterSingleton(new SettingsViewModel());
+
             MainPage = new AppShell();
         }
 

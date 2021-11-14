@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:Fr.Fisher01.IngressExactAp.Views.Controls;assembly=Fr.Fisher01.IngressExactAp"
+             x:Class="Fr.Fisher01.IngressExactAp.Views.CalculatorView"
+             BackgroundColor="#333"
+             Padding="40">
+    
+    <ContentPage.Content>
+        
+        <StackLayout>
+            <StackLayout Spacing="25" Padding="0,20">
+                <controls:FloatingLabelEntry Title="Current AP" HorizontalOptions="Center" Margin="0" />
+
+                <controls:FloatingLabelEntry Title="Target AP" HorizontalOptions="Center" Margin="0" />
+            </StackLayout>
+
+            <Grid ColumnDefinitions="*, Auto" Padding="20,0">
+                <Label Grid.Column="0" Style="{StaticResource ObjectiveLabelStyle}" Text="Do this"/>
+                <Label Grid.Column="1" Style="{StaticResource ObjectiveLabelStyle}" Text="3x"/>
+            </Grid>
+        </StackLayout>
+
+    </ContentPage.Content>
+</ContentPage>
