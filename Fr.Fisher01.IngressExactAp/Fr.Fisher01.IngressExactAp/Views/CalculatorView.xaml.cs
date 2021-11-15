@@ -1,4 +1,5 @@
 ﻿
+using Fr.Fisher01.IngressExactAp.ViewModels;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -10,6 +11,8 @@ namespace Fr.Fisher01.IngressExactAp.Views
         public CalculatorView()
         {
             InitializeComponent();
+
+            BindingContext = DependencyService.Get<CalculatorViewModel>();
         }
     }
 }
