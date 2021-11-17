@@ -12,17 +12,17 @@
         
         <StackLayout>
             <StackLayout Spacing="25" Padding="0,20">
-                <controls:FloatingLabelEntry Title="Current AP" HorizontalOptions="Center" Margin="0"
+                <controls:FloatingLabelEntry Title="Current AP" HorizontalOptions="CenterAndExpand" Margin="0"
                                              Keyboard="Numeric"
                                              Text="{Binding CurrentApString}" />
 
-                <controls:FloatingLabelEntry Title="Target AP" HorizontalOptions="Center" Margin="0"
+                <controls:FloatingLabelEntry Title="Target AP" HorizontalOptions="CenterAndExpand" Margin="0"
                                              Keyboard="Numeric"
                                              Text="{Binding TargetApString}" />
             </StackLayout>
 
             <StackLayout Orientation="Horizontal" HorizontalOptions="Center" Margin="0,0,0,15" Spacing="20">
-                <Label Text="Double AP mode">
+                <Label Text="Double AP mode" VerticalTextAlignment="Center">
                     <Label.GestureRecognizers>
                         <TapGestureRecognizer Tapped="DoubleApLabel_TapGestureRecognizer_OnTapped"/>
                     </Label.GestureRecognizers>

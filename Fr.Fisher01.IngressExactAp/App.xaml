@@ -11,12 +11,12 @@
 
             <Style TargetType="Label">
                 <Setter Property="TextColor" Value="#DDD"/>
-                <Setter Property="FontSize" Value="Medium"/>
+                <Setter Property="FontSize" Value="14"/>
             </Style>
 
             <Style x:Key="ObjectiveLabelStyle" TargetType="Label">
                 <Setter Property="TextColor" Value="#DDD"/>
-                <Setter Property="FontSize" Value="Large"/>
+                <Setter Property="FontSize" Value="16"/>
             </Style>
         </ResourceDictionary>        
     </Application.Resources>

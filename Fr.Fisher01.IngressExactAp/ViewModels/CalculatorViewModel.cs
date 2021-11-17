@@ -93,7 +93,7 @@ namespace Fr.Fisher01.IngressExactAp.ViewModels
             {
                 if (action.Count == 0)
                     Dialogs.Toast("Warning : Your last action changed the rest of actions to do ! Read carefully what you need now !",
-                        TimeSpan.FromSeconds(5));
+                        TimeSpan.FromSeconds(10));
                         
                 _currentAp += action.ApGain;
                 CurrentApString = _currentAp.ToString();
