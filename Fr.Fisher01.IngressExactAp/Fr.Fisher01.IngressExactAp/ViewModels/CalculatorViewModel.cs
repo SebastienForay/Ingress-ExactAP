@@ -131,7 +131,7 @@ namespace Fr.Fisher01.IngressExactAp.ViewModels
                 goal -= action.ApGain * action.LockedValue;
 
             _retries = 0;
-            if ((!_isDoubleApEnabled || _goalAp % 2 == 0) && goal >= 0 && RecurseCalculateAp(goal, 0)) {
+            if ((!_isDoubleApEnabled || _goalAp % 2 == 0) && goal >= 0 && RecurseCalculateAp(goal)) {
                 _success = true;
             }
             else
@@ -145,7 +145,7 @@ namespace Fr.Fisher01.IngressExactAp.ViewModels
             }
         }
 
-        private bool RecurseCalculateAp(int remainingAp, int actionIndex)
+        private bool RecurseCalculateAp(int remainingAp, int actionIndex = 0)
         {
             _retries++;
             

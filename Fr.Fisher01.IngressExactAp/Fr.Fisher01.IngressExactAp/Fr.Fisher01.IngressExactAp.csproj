@@ -13,11 +13,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Models\" />
-    <Folder Include="Services\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Compile Update="Views\Controls\FloatingLabelEntry.xaml.cs">
       <DependentUpon>FloatingLabelEntry.xaml</DependentUpon>
     </Compile>
