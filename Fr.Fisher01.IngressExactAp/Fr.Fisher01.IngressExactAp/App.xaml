@@ -8,6 +8,12 @@
     <Application.Resources>
         <ResourceDictionary>
             <Color x:Key="Primary">#555</Color>
+
+            <Style TargetType="Label">
+                <Setter Property="TextColor" Value="#DDD"/>
+                <Setter Property="FontSize" Value="Medium"/>
+            </Style>
+
             <Style x:Key="ObjectiveLabelStyle" TargetType="Label">
                 <Setter Property="TextColor" Value="#DDD"/>
                 <Setter Property="FontSize" Value="Large"/>

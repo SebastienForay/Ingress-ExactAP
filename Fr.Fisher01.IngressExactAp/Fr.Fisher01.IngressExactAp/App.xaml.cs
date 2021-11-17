@@ -1,4 +1,5 @@
-﻿using Fr.Fisher01.IngressExactAp.ViewModels;
+﻿using Acr.UserDialogs;
+using Fr.Fisher01.IngressExactAp.ViewModels;
 using Xamarin.Forms;
 
 namespace Fr.Fisher01.IngressExactAp
@@ -9,8 +10,8 @@ namespace Fr.Fisher01.IngressExactAp
         {
             InitializeComponent();
 
-            DependencyService.RegisterSingleton(new CalculatorViewModel());
-            DependencyService.RegisterSingleton(new SettingsViewModel());
+            DependencyService.RegisterSingleton(new CalculatorViewModel(UserDialogs.Instance));
+            DependencyService.RegisterSingleton(new SettingsViewModel(UserDialogs.Instance));
 
             MainPage = new AppShell();
         }

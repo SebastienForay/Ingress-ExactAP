@@ -1,17 +1,28 @@
-﻿using System;
+﻿using Acr.UserDialogs;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 namespace Fr.Fisher01.IngressExactAp.ViewModels
 {
-    public class BaseViewModel : INotifyPropertyChanged
+    public abstract class BaseViewModel : ViewModel
     {
-        private bool isBusy = false;
+        protected BaseViewModel(IUserDialogs dialogs)
+        {
+            this.Dialogs = dialogs;
+        }
+
+        protected IUserDialogs Dialogs { get; }
+    }
+
+    public abstract class ViewModel : INotifyPropertyChanged
+    {
+        private bool _isBusy = false;
         public bool IsBusy
         {
-            get => isBusy;
-            set => SetProperty(ref isBusy, value);
+            get => _isBusy;
+            set => SetProperty(ref _isBusy, value);
         }
 
         protected bool SetProperty<T>(ref T backingStore, T value, [CallerMemberName] string propertyName = "", Action onChanged = null)
@@ -38,5 +49,6 @@ namespace Fr.Fisher01.IngressExactAp.ViewModels
         }
 
         #endregion
+
     }
 }

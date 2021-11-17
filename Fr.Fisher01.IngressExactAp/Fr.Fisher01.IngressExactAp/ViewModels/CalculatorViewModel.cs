@@ -1,48 +1,53 @@
-﻿using System.Collections.ObjectModel;
-using System.Diagnostics;
+﻿using Acr.UserDialogs;
+using System;
+using System.Collections.ObjectModel;
 using System.Globalization;
+using System.Linq;
+using System.Windows.Input;
+using Xamarin.Forms;
 
 namespace Fr.Fisher01.IngressExactAp.ViewModels
 {
     public class CalculatorViewModel : BaseViewModel
     {
-
-        public CalculatorViewModel()
+        public CalculatorViewModel(IUserDialogs dialogs) : base(dialogs)
         {
-            RewardActions = new ObservableCollection<RewardAction>()
-            {
-                new(ActionType.MultiField, "Multi field", (1250 * 2) + 313),
-                new(ActionType.CreateField, "Field", 1250 + 313),
-                new(ActionType.Capture, "Capture", 500 + 125),
-                new(ActionType.Complete8ThReso, "Complete", 250 + 125),
-                new(ActionType.CreateLink, "Link", 313),
-                new(ActionType.DeployReso, "Deploy", 125),
-                new(ActionType.Hack, "Hack Enemy", 100),
-                new(ActionType.UpgradeReso, "Upgrade", 65),
-                new(ActionType.Recharge, "Recharge", 65), // because au SARS-CoV-2 pandemic, else it should be 10
-            };
+            RewardActions = new ObservableCollection<RewardAction>(new []
+                { 
+                    new RewardAction(ActionType.MultiField, "Multi field", (1250 * 2) + 313),
+                    new (ActionType.CreateField, "Field", 1250 + 313),
+                    new(ActionType.Capture, "Capture", 500 + 125),
+                    new(ActionType.Complete8ThReso, "Complete", 250 + 125),
+                    new(ActionType.CreateLink, "Link", 313),
+                    new(ActionType.Deploy, "Deploy", 125),
+                    new(ActionType.Hack, "Hack Enemy", 100),
+                    new(ActionType.UpgradeReso, "Upgrade", 65),
+                    new(ActionType.Recharge, "Recharge", 65) // because au SARS-CoV-2 pandemic, else it should be 10
+                }.OrderByDescending(x => x.ApGain).ToList()); // This ensure list is ordered correctly
         }
+
+        #region Properties
 
         public ObservableCollection<RewardAction> RewardActions { get; set; }
         
-        private string currentApString;
+        private string _currentApString;
         public string CurrentApString
         {
-            get => currentApString;
+            get => _currentApString;
             set
             {
-                if (SetProperty(ref currentApString, value))
+                if (SetProperty(ref _currentApString, value))
                     Refresh();
             }
         }
 
-        private string targetApString;
+        private string _targetApString;
         public string TargetApString
         {
-            get => targetApString;
+            get => _targetApString;
             set
             {
-                if (SetProperty(ref targetApString, value))
+                if (SetProperty(ref _targetApString, value))
                     Refresh();
             }
         }
@@ -63,14 +68,44 @@ namespace Fr.Fisher01.IngressExactAp.ViewModels
             }
         }
 
-        private int _goalAp = 0;
-        private bool _success = false;
-        
-        private int _index = 0;
+        #endregion
 
+        #region Commands
+
+        public ICommand ShowTipCommand => new Command<RewardAction>(ShowTip);
+        public ICommand PickNumberCommand => new Command<RewardAction>(PickNumber);
+        public ICommand ActionDoneOnceCommand => new Command<RewardAction>(ActionDoneOnce);
+
+        private void ShowTip(RewardAction action)
+        {
+            Dialogs.Alert(GetTipForActionType(action.Type));
+        }
+
+        private void PickNumber(RewardAction action)
+        {
+
+        }
+
+        private void ActionDoneOnce(RewardAction action)
+        {
+            var parsed = int.TryParse(CurrentApString, NumberStyles.Integer, CultureInfo.InvariantCulture, out _currentAp);
+            if (parsed)
+            {
+                if (action.Count == 0)
+                    Dialogs.Toast("Warning : Your last action changed the rest of actions to do ! Read carefully what you need now !",
+                        TimeSpan.FromSeconds(5));
+                        
+                _currentAp += action.ApGain;
+                CurrentApString = _currentAp.ToString();
+            }
+        }
+
+        #endregion
+
+        private bool _success = false;
+        private int _goalAp = 0;
         private int _currentAp = 0;
         private int _targetAp = 0;
-
         private int _retries = 0;
         
         private void Refresh()
@@ -83,19 +118,17 @@ namespace Fr.Fisher01.IngressExactAp.ViewModels
             if (!parsed)
                 return;
 
-            Debug.WriteLine($"_currentAp = {_currentAp}");
-            Debug.WriteLine($"_targetAp = {_targetAp}");
+            if (_currentAp > _targetAp)
+            {
+                this.SetCounters(-1);
+                return;
+            }
 
             this.SetCounters(0);
-            _goalAp = _targetAp - _currentAp;
+            var goal = _goalAp = _targetAp - _currentAp;
 
-            var goal = _goalAp;
-
-            foreach (var action in RewardActions)
-            {
-                if (action.IsLocked)
-                    goal -= action.ApGain * action.LockedValue;
-            }
+            foreach (var action in RewardActions.Where(x => x.IsLocked))
+                goal -= action.ApGain * action.LockedValue;
 
             _retries = 0;
             if ((!_isDoubleApEnabled || _goalAp % 2 == 0) && goal >= 0 && RecurseCalculateAp(goal, 0)) {
@@ -146,72 +179,90 @@ namespace Fr.Fisher01.IngressExactAp.ViewModels
 
         private void SetCounters(int count)
         {
-            foreach (var action in RewardActions)
-            {
-                if (action.IsLocked is false) 
-                    action.Count = count;
-            }
+            foreach (var action in RewardActions.Where(x => x.IsLocked is false)) 
+                action.Count = count;
         }
 
-        public class RewardAction : BaseViewModel
+        private string GetTipForActionType(ActionType actionType)
         {
-            public ActionType Type { get; }
-            public string Text { get; }
-
-            private int _apGain;
-            public int ApGain
+            return actionType switch
             {
-                get => _apGain * Modifier;
-                private set => SetProperty(ref _apGain, value);
-            }
-
-            public RewardAction(ActionType type, string text, int apGain)
-            {
-                Text = text;
-                ApGain = apGain;
-                Type = type;
-            }
-
-            private int _modifier = 1;
-            public int Modifier
-            {
-                get => _modifier;
-                set => SetProperty(ref _modifier, value);
-            }
-
-            private int _count = 0;
-            public int Count
-            {
-                get => _count;
-                set => SetProperty(ref _count, value);
-            }
-
-            private int _lockedValue = 0;
-            public int LockedValue
-            {
-                get => _lockedValue;
-                set => SetProperty(ref _lockedValue, value);
-            }
-
-            private bool _isLocked = false;
-            public bool IsLocked
-            {
-                get => _isLocked;
-                set => SetProperty(ref _isLocked, value);
-            }
+                ActionType.Capture => "Capture portal by deploying one and only one resonator",
+                ActionType.Deploy => "Deploy a mod or a resonator",
+                ActionType.Complete8ThReso => "Deploy the 8th resonator",
+                ActionType.CreateLink => "Create a link without creating a control field",
+                ActionType.CreateField => "Create one link that creates one control field",
+                ActionType.MultiField => "Create one link that creates two control fields at the same time",
+                ActionType.Hack => "Hack an enemy portal",
+                ActionType.UpgradeReso => "Upgrade a resonator",
+                ActionType.Recharge => "Recharge portal once",
+                _ => $"Unknown action {actionType}"
+            };
         }
+    }
 
-        public enum ActionType
+    public enum ActionType
+    {
+        Capture,
+        Deploy,
+        Complete8ThReso,
+        CreateLink,
+        CreateField,
+        MultiField,
+        Hack,
+        UpgradeReso,
+        Recharge
+    }
+
+    public class RewardAction : ViewModel
+    {
+        public ActionType Type { get; }
+        public string Text { get; }
+
+        public RewardAction(ActionType type, string text, int apGain)
         {
-            Capture,
-            DeployReso,
-            Complete8ThReso,
-            CreateLink,
-            CreateField,
-            MultiField,
-            Hack,
-            UpgradeReso,
-            Recharge
+            Text = text;
+            ApGain = apGain;
+            Type = type;
         }
+
+        #region Properties
+
+        private int _apGain;
+        public int ApGain
+        {
+            get => _apGain * Modifier;
+            private set => SetProperty(ref _apGain, value);
+        }
+
+        private int _modifier = 1;
+        public int Modifier
+        {
+            get => _modifier;
+            set => SetProperty(ref _modifier, value);
+        }
+
+        private int _count = 0;
+        public int Count
+        {
+            get => _count;
+            set => SetProperty(ref _count, value);
+        }
+
+        private int _lockedValue = 0;
+        public int LockedValue
+        {
+            get => _lockedValue;
+            set => SetProperty(ref _lockedValue, value);
+        }
+
+        private bool _isLocked = false;
+        public bool IsLocked
+        {
+            get => _isLocked;
+            set => SetProperty(ref _isLocked, value);
+        }
+
+        #endregion
     }
 }
