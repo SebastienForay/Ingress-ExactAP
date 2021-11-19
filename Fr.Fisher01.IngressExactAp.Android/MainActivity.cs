@@ -8,8 +8,9 @@ using Plugin.CurrentActivity;
 namespace Fr.Fisher01.IngressExactAp.Droid
 {
     [Activity(
-        Label = "Ingress ExactAp",
+        Label = "ExactAp for Ingress",
         Icon = "@mipmap/icon",
+        RoundIcon = "@mipmap/icon_round",
         Theme = "@style/MainTheme",
         MainLauncher = true,
         ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | 
