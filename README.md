@@ -8,8 +8,8 @@ Not affiliated in any way with Niantic.
 ## Build status
 | Build Server | Platform | Status |
 |--------------|----------|--------|
-| Azure DevOps | Android  | [![Build Status](https://dev.azure.com/)](https://dev.azure.com/) |
-| Azure DevOps | iOS  | [![Build Status](https://dev.azure.com/)](https://dev.azure.com/)|
+| Azure DevOps | Android  | [![Build Status](https://dev.azure.com/Sebastien-Foray/Ingress-ExactAP/_apis/build/status/Android%20Release?branchName=main)](https://dev.azure.com/Sebastien-Foray/Ingress-ExactAP/_build/latest?definitionId=1&branchName=main) |
+| Azure DevOps | iOS  | https://dev.azure.com/Sebastien-Foray/Ingress-ExactAP/_apis/build/status/iOS%20Release?branchName=main |
 
 ---
 ## FAQ
