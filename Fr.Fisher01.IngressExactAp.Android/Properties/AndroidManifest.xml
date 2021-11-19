@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="1637339046" android:versionName="1.0" package="fr.fisher01.ingressexactap" android:installLocation="auto">
 	<uses-sdk android:minSdkVersion="24" android:targetSdkVersion="30" />
-	<application android:label="ExactAP for Ingress" android:theme="@style/MainTheme"></application>
+	<application android:label="ExactAP for Ingress" android:theme="@style/MainTheme" android:icon="@mipmap/ic_launcher"></application>
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 </manifest>
