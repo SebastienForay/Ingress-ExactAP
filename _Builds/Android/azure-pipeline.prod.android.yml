@@ -29,7 +29,7 @@ steps:
 # changes PackageName, Version name, App label and icon
 - task: PowerShell@2
   inputs:
-    filePath: '_Builds/AndroidManifestUpdater.ps1'
+    filePath: '_Builds/Android/AndroidManifestUpdater.ps1'
     arguments: '-filePath "$(Build.SourcesDirectory)/Fr.Fisher01.IngressExactAp.Android/Properties/AndroidManifest.xml"'
 
 # NuGet Tool install
