@@ -1,0 +1,56 @@
+# Xamarin.Android
+# Build a Xamarin.Android project.
+# Add steps that test, sign, and distribute an app, save build artifacts, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/xamarin
+
+trigger:
+- main
+
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+- name: buildConfiguration
+  value: 'Release'
+- name: outputDirectory
+  value: '$(build.binariesDirectory)/$(buildConfiguration)'
+
+name: $(Rev:rr)
+
+steps:
+
+# Download signing Keystore file
+- task: DownloadSecureFile@1
+  name: Keystore 
+  inputs:
+    secureFile: 'IngressExactAp.Keystore'
+
+# ManifestUpdater powershell
+# changes PackageName, Version name, App label and icon
+- task: PowerShell@2
+  inputs:
+    filePath: '_Builds/AndroidManifestUpdater.ps1'
+    arguments: '-filePath "$(Build.SourcesDirectory)/Fr.Fisher01.IngressExactAp.Android/Properties/AndroidManifest.xml"'
+
+# NuGet Tool install
+- task: NuGetToolInstaller@1
+
+# NuGet packages restore
+- task: NuGetCommand@2
+  inputs:
+    restoreSolution: '**/Fr.Fisher01.IngressExactAp.sln'
+
+# Build Xamarin.Android app bundle
+- task: XamarinAndroid@1
+  inputs:
+    projectFile: '**/Fr.Fisher01.IngressExactAp.Android.csproj'
+    outputDirectory: '$(outputDirectory)'
+    configuration: '$(buildConfiguration)'
+    msbuildArguments: '-p:AndroidPackageFormat=aab -t:SignAndroidPackage -p:AndroidKeyStore=True -p:AndroidSigningKeyStore=$(Keystore.secureFilePath) -p:AndroidSigningStorePass=$(KeystorePassword) -p:AndroidSigningKeyAlias=$(KeystoreAlias) -p:AndroidSigningKeyPass=$(KeystorePassword)'
+
+# Publish artifact
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(outputDirectory)'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'
