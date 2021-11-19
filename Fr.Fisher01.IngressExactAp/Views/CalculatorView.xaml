@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:Fr.Fisher01.IngressExactAp.Views.Controls;assembly=Fr.Fisher01.IngressExactAp"
+             xmlns:viewModels="clr-namespace:Fr.Fisher01.IngressExactAp.ViewModels;assembly=Fr.Fisher01.IngressExactAp"
+             x:Class="Fr.Fisher01.IngressExactAp.Views.CalculatorView" x:Name="This" 
+             x:DataType="viewModels:CalculatorViewModel"
+             BackgroundColor="#333"
+             Padding="40">
+    
+    <ContentPage.Content>
+        
+        <StackLayout>
+            <StackLayout Spacing="25" Padding="0,20">
+                <controls:FloatingLabelEntry Title="Current AP" HorizontalOptions="CenterAndExpand" Margin="0"
+                                             Keyboard="Numeric"
+                                             Text="{Binding CurrentApString}" />
+
+                <controls:FloatingLabelEntry Title="Target AP" HorizontalOptions="CenterAndExpand" Margin="0"
+                                             Keyboard="Numeric"
+                                             Text="{Binding TargetApString}" />
+            </StackLayout>
+
+            <StackLayout Orientation="Horizontal" HorizontalOptions="Center" Margin="0,0,0,15" Spacing="20">
+                <Label Text="Double AP mode" VerticalTextAlignment="Center">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="DoubleApLabel_TapGestureRecognizer_OnTapped"/>
+                    </Label.GestureRecognizers>
+                </Label>
+                <Switch IsToggled="{Binding IsDoubleApEnabled}" ThumbColor="LightGray" OnColor="White"/>
+            </StackLayout>
+
+            <StackLayout BindableLayout.ItemsSource="{Binding RewardActions}">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="viewModels:RewardAction">
+                        <Grid ColumnDefinitions="*, Auto" Padding="20,0">
+                            <Label Grid.Column="0" Style="{StaticResource ObjectiveLabelStyle}" Text="{Binding Text}">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding BindingContext.ShowTipCommand, Source={x:Reference This}}" CommandParameter="{Binding .}"/>
+                                </Label.GestureRecognizers>
+                            </Label>
+                            <Label Grid.Column="1" Style="{StaticResource ObjectiveLabelStyle}" Text="{Binding Count, StringFormat='x {0}'}">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding BindingContext.PickNumberCommand, Source={x:Reference This}}" CommandParameter="{Binding .}"/>
+                                    <TapGestureRecognizer NumberOfTapsRequired="2" Command="{Binding BindingContext.ActionDoneOnceCommand, Source={x:Reference This}}" CommandParameter="{Binding .}"/>
+                                </Label.GestureRecognizers>
+                            </Label>
+                        </Grid>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </StackLayout>
+        </StackLayout>
+
+    </ContentPage.Content>
+</ContentPage>
