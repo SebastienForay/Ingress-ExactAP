@@ -16,6 +16,7 @@
                      ReturnType="{Binding ReturnType, Source={x:Reference This}}"
                      IsPassword="{Binding IsPassword, Source={x:Reference This}}"
                      Keyboard="{Binding Keyboard, Source={x:Reference This}}"
+                     HorizontalTextAlignment="{Binding HorizontalTextAlignment, Source={x:Reference This}}"
                      Unfocused="Handle_Unfocused" 
                      Focused="Handle_Focused"
                      TextColor="#DDD">

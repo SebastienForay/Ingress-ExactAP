@@ -1,10 +1,12 @@
 ﻿using Acr.UserDialogs;
+using Fr.Fisher01.IngressExactAp.ViewModels.SubViewModels;
 using System;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Input;
 using Xamarin.Forms;
+using ActionType = Fr.Fisher01.IngressExactAp.ViewModels.SubViewModels.RewardActionSubViewModel.ActionType;
 
 namespace Fr.Fisher01.IngressExactAp.ViewModels
 {
@@ -12,81 +14,42 @@ namespace Fr.Fisher01.IngressExactAp.ViewModels
     {
         public CalculatorViewModel(IUserDialogs dialogs) : base(dialogs)
         {
-            RewardActions = new ObservableCollection<RewardAction>(new []
-                { 
-                    new RewardAction(ActionType.MultiField, "Multi field", (1250 * 2) + 313),
-                    new (ActionType.CreateField, "Field", 1250 + 313),
-                    new(ActionType.Capture, "Capture", 500 + 125),
-                    new(ActionType.Complete8ThReso, "Complete", 250 + 125),
-                    new(ActionType.CreateLink, "Link", 313),
-                    new(ActionType.Deploy, "Deploy", 125),
-                    new(ActionType.Hack, "Hack Enemy", 100),
-                    new(ActionType.UpgradeReso, "Upgrade", 65),
-                    new(ActionType.Recharge, "Recharge", 65) // because au SARS-CoV-2 pandemic, else it should be 10
-                }.OrderByDescending(x => x.ApGain).ToList()); // This ensure list is ordered correctly
+            this.PropertyChanged += CalculatorViewModel_PropertyChanged;
+        }
+
+        public override void ViewDidAppear()
+        {
+            base.ViewDidAppear();
+
+            this.ReloadData();
         }
 
         #region Properties
 
-        public ObservableCollection<RewardAction> RewardActions { get; set; }
-        
-        private string _currentApString;
-        public string CurrentApString
-        {
-            get => _currentApString;
-            set
-            {
-                if (SetProperty(ref _currentApString, value))
-                    Refresh();
-            }
-        }
-
-        private string _targetApString;
-        public string TargetApString
-        {
-            get => _targetApString;
-            set
-            {
-                if (SetProperty(ref _targetApString, value))
-                    Refresh();
-            }
-        }
-
-        private bool _isDoubleApEnabled;
-        public bool IsDoubleApEnabled
-        {
-            get => _isDoubleApEnabled;
-            set
-            {
-                if (SetProperty(ref _isDoubleApEnabled, value))
-                {
-                    foreach (var action in RewardActions) 
-                        action.Modifier = _isDoubleApEnabled ? 2 : 1;
-
-                    Refresh();
-                }
-            }
-        }
+        public ObservableCollection<RewardActionSubViewModel> RewardActions { get; set; }
+        public string CurrentApString { get; set; }
+        public string TargetApString { get; set; }
+        public bool IsDoubleApEnabled { get; set; }
 
         #endregion
 
         #region Commands
 
-        public ICommand ShowTipCommand => new Command<RewardAction>(ShowTip);
-        public ICommand PickNumberCommand => new Command<RewardAction>(PickNumber);
-        public ICommand ActionDoneOnceCommand => new Command<RewardAction>(ActionDoneOnce);
+        public ICommand ShowTipCommand => new Command<RewardActionSubViewModel>(ShowTip);
+        public ICommand PickNumberCommand => new Command<RewardActionSubViewModel>(PickNumber);
+        public ICommand ActionDoneOnceCommand => new Command<RewardActionSubViewModel>(ActionDoneOnce);
 
-        private void ShowTip(RewardAction action)
+        private void ShowTip(RewardActionSubViewModel action)
         {
             Dialogs.Alert(GetTipForActionType(action.Type));
         }
 
-        private void PickNumber(RewardAction action)
+        private void PickNumber(RewardActionSubViewModel action)
         {
 
         }
 
-        private void ActionDoneOnce(RewardAction action)
+        private void ActionDoneOnce(RewardActionSubViewModel action)
         {
             var parsed = int.TryParse(CurrentApString, NumberStyles.Integer, CultureInfo.InvariantCulture, out _currentAp);
             if (parsed)
@@ -95,12 +58,29 @@ namespace Fr.Fisher01.IngressExactAp.ViewModels
                     Dialogs.Toast("Warning : Your last action changed the rest of actions to do ! Read carefully what you need now !",
                         TimeSpan.FromSeconds(10));
                         
-                _currentAp += action.ApGain;
+                _currentAp += action.ApGainWithModifier;
                 CurrentApString = _currentAp.ToString();
             }
         }
 
         #endregion
+        
+        private void CalculatorViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(IsDoubleApEnabled))
+            {
+                foreach (var action in RewardActions) 
+                    action.Modifier = IsDoubleApEnabled ? 2 : 1;
+            }
+
+            if (e.PropertyName is nameof(IsDoubleApEnabled) or nameof(CurrentApString) or nameof(TargetApString) or nameof(RewardActions))
+                Refresh();
+        }
+
+        private void ReloadData()
+        {
+            RewardActions = new ObservableCollection<RewardActionSubViewModel>(App.RewardActions);
+        }
 
         private bool _success = false;
         private int _goalAp = 0;
@@ -128,10 +108,10 @@ namespace Fr.Fisher01.IngressExactAp.ViewModels
             var goal = _goalAp = _targetAp - _currentAp;
 
             foreach (var action in RewardActions.Where(x => x.IsLocked))
-                goal -= action.ApGain * action.LockedValue;
+                goal -= action.ApGainWithModifier * action.LockedValue;
 
             _retries = 0;
-            if ((!_isDoubleApEnabled || _goalAp % 2 == 0) && goal >= 0 && RecurseCalculateAp(goal)) {
+            if ((!IsDoubleApEnabled || _goalAp % 2 == 0) && goal >= 0 && RecurseCalculateAp(goal)) {
                 _success = true;
             }
             else
@@ -153,7 +133,7 @@ namespace Fr.Fisher01.IngressExactAp.ViewModels
                 return true;
 
             if (RewardActions[actionIndex].Type == ActionType.Recharge && 
-                remainingAp % RewardActions[actionIndex].ApGain != 0)
+                remainingAp % RewardActions[actionIndex].ApGainWithModifier != 0)
                 return false;
 
             if (actionIndex < RewardActions.Count)
@@ -162,15 +142,15 @@ namespace Fr.Fisher01.IngressExactAp.ViewModels
                     return RecurseCalculateAp(remainingAp, actionIndex + 1);
                 }
                 
-                var remains = remainingAp % RewardActions[actionIndex].ApGain;
+                var remains = remainingAp % RewardActions[actionIndex].ApGainWithModifier;
                 while (remains <= remainingAp && _retries < 100000)
                 {
-                    RewardActions[actionIndex].Count = (remainingAp - remains) / RewardActions[actionIndex].ApGain;
+                    RewardActions[actionIndex].Count = (remainingAp - remains) / RewardActions[actionIndex].ApGainWithModifier;
                     
                     if (RecurseCalculateAp(remains, actionIndex + 1))
                         return true;
                     
-                    remains += RewardActions[actionIndex].ApGain;
+                    remains += RewardActions[actionIndex].ApGainWithModifier;
                 }
             }
             return false;
@@ -199,70 +179,5 @@ namespace Fr.Fisher01.IngressExactAp.ViewModels
                 _ => $"Unknown action {actionType}"
             };
         }
-    }
-
-    public enum ActionType
-    {
-        Capture,
-        Deploy,
-        Complete8ThReso,
-        CreateLink,
-        CreateField,
-        MultiField,
-        Hack,
-        UpgradeReso,
-        Recharge
-    }
-
-    public class RewardAction : ViewModel
-    {
-        public ActionType Type { get; }
-        public string Text { get; }
-
-        public RewardAction(ActionType type, string text, int apGain)
-        {
-            Text = text;
-            ApGain = apGain;
-            Type = type;
-        }
-
-        #region Properties
-
-        private int _apGain;
-        public int ApGain
-        {
-            get => _apGain * Modifier;
-            private set => SetProperty(ref _apGain, value);
-        }
-
-        private int _modifier = 1;
-        public int Modifier
-        {
-            get => _modifier;
-            set => SetProperty(ref _modifier, value);
-        }
-
-        private int _count = 0;
-        public int Count
-        {
-            get => _count;
-            set => SetProperty(ref _count, value);
-        }
-
-        private int _lockedValue = 0;
-        public int LockedValue
-        {
-            get => _lockedValue;
-            set => SetProperty(ref _lockedValue, value);
-        }
-
-        private bool _isLocked = false;
-        public bool IsLocked
-        {
-            get => _isLocked;
-            set => SetProperty(ref _isLocked, value);
-        }
-
-        #endregion
     }
 }

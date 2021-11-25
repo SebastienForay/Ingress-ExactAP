@@ -1,12 +1,53 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="Fr.Fisher01.IngressExactAp.Views.SettingsView">
+             xmlns:subViewModels="clr-namespace:Fr.Fisher01.IngressExactAp.ViewModels.SubViewModels;assembly=Fr.Fisher01.IngressExactAp"
+             xmlns:controls="clr-namespace:Fr.Fisher01.IngressExactAp.Views.Controls;assembly=Fr.Fisher01.IngressExactAp"
+             xmlns:viewModels="clr-namespace:Fr.Fisher01.IngressExactAp.ViewModels;assembly=Fr.Fisher01.IngressExactAp"
+             x:Class="Fr.Fisher01.IngressExactAp.Views.SettingsView" x:Name="This"
+             x:DataType="viewModels:SettingsViewModel"
+             BackgroundColor="#333">
+
     <ContentPage.Content>
-        <StackLayout>
-            <Label Text="Welcome to Xamarin.Forms!"
-                VerticalOptions="CenterAndExpand" 
-                HorizontalOptions="CenterAndExpand" />
-        </StackLayout>
+        <ScrollView>
+            <StackLayout Spacing="15" Padding="20,40">
+
+                <Label Text="Edit AP gain per action if needed :"
+                       FontAttributes="Bold" FontSize="18" />
+
+                <Label Text="(edit it at your own risk, the app won't verify if new values are plausible)"
+                       HorizontalTextAlignment="Center"
+                       TextColor="OrangeRed"/>
+
+                <StackLayout BindableLayout.ItemsSource="{Binding RewardActions}">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="subViewModels:RewardActionSubViewModel">
+                            <Grid ColumnDefinitions="2*, *" Padding="20,0">
+                                <Label Grid.Column="0" Style="{StaticResource ObjectiveLabelStyle}" Text="{Binding Text}"
+                                       VerticalTextAlignment="Center">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding BindingContext.ShowTipCommand, Source={x:Reference This}}" CommandParameter="{Binding .}"/>
+                                    </Label.GestureRecognizers>
+
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding HasExtraTip}" Value="True">
+                                            <Setter Property="Text" Value="{Binding Text, StringFormat='{0} (?)'}"/>
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+
+                                <controls:FloatingLabelEntry Grid.Column="1" 
+                                                             HorizontalTextAlignment="End"
+                                                             Text="{Binding ApGain}"
+                                                             Keyboard="Numeric" />
+                            </Grid>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </StackLayout>
+
+                <Button Text="Save" Command="{Binding SaveCommand}"/>
+            </StackLayout>
+
+        </ScrollView>
     </ContentPage.Content>
 </ContentPage>

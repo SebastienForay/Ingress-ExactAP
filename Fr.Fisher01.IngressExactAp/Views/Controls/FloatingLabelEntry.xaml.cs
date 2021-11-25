@@ -16,12 +16,14 @@ namespace Fr.Fisher01.IngressExactAp.Views.Controls
 
         public event EventHandler Completed;
 
-        public static readonly BindableProperty TextProperty = BindableProperty.Create("Text", typeof(string), typeof(string), string.Empty, BindingMode.TwoWay, null, HandleBindingPropertyChangedDelegate);
+        #region Bindable properties
 
+        public static readonly BindableProperty TextProperty = BindableProperty.Create("Text", typeof(string), typeof(string), string.Empty, BindingMode.TwoWay, null, HandleBindingPropertyChangedDelegate);
         public static readonly BindableProperty TitleProperty = BindableProperty.Create("Title", typeof(string), typeof(string), string.Empty, BindingMode.TwoWay, null);
         public static readonly BindableProperty ReturnTypeProperty = BindableProperty.Create(nameof(ReturnType), typeof(ReturnType), typeof(FloatingLabelEntry), ReturnType.Default);
         public static readonly BindableProperty IsPasswordProperty = BindableProperty.Create("IsPassword", typeof(bool), typeof(FloatingLabelEntry), default(bool));
         public static readonly BindableProperty KeyboardProperty = BindableProperty.Create("Keyboard", typeof(Keyboard), typeof(FloatingLabelEntry), Keyboard.Default, coerceValue: (o, v) => (Keyboard)v ?? Keyboard.Default);
+        public static readonly BindableProperty HorizontalTextAlignmentProperty = BindableProperty.Create("HorizontalTextAlignment", typeof(TextAlignment), typeof(TextAlignment), TextAlignment.Start, BindingMode.TwoWay, null);
 
         static async void HandleBindingPropertyChangedDelegate(BindableObject bindable, object oldValue, object newValue)
         {
@@ -59,15 +61,23 @@ namespace Fr.Fisher01.IngressExactAp.Views.Controls
 
         public bool IsPassword
         {
-            get { return (bool)GetValue(IsPasswordProperty); }
-            set { SetValue(IsPasswordProperty, value); }
+            get => (bool)GetValue(IsPasswordProperty);
+            set => SetValue(IsPasswordProperty, value);
         }
 
         public Keyboard Keyboard
         {
-            get { return (Keyboard)GetValue(KeyboardProperty); }
-            set { SetValue(KeyboardProperty, value); }
+            get => (Keyboard)GetValue(KeyboardProperty);
+            set => SetValue(KeyboardProperty, value);
         }
+
+        public TextAlignment HorizontalTextAlignment
+        {
+            get => (TextAlignment)GetValue(HorizontalTextAlignmentProperty);
+            set => SetValue(HorizontalTextAlignmentProperty, value);
+        }
+
+        #endregion
 
         public FloatingLabelEntry()
         {
