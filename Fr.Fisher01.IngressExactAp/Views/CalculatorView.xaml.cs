@@ -1,4 +1,5 @@
-﻿using Fr.Fisher01.IngressExactAp.ViewModels;
+﻿using Acr.UserDialogs;
+using Fr.Fisher01.IngressExactAp.ViewModels;
 using System;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -14,7 +15,13 @@ namespace Fr.Fisher01.IngressExactAp.Views
         {
             InitializeComponent();
 
-            BindingContext = _viewModel = DependencyService.Get<CalculatorViewModel>();
+            BindingContext = _viewModel = new CalculatorViewModel(UserDialogs.Instance);
+        }
+
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+            _viewModel.ViewDidAppear();
         }
 
         private void DoubleApLabel_TapGestureRecognizer_OnTapped(object sender, EventArgs e)

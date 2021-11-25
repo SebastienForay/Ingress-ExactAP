@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:controls="clr-namespace:Fr.Fisher01.IngressExactAp.Views.Controls;assembly=Fr.Fisher01.IngressExactAp"
              xmlns:viewModels="clr-namespace:Fr.Fisher01.IngressExactAp.ViewModels;assembly=Fr.Fisher01.IngressExactAp"
+             xmlns:subViewModels="clr-namespace:Fr.Fisher01.IngressExactAp.ViewModels.SubViewModels;assembly=Fr.Fisher01.IngressExactAp"
              x:Class="Fr.Fisher01.IngressExactAp.Views.CalculatorView" x:Name="This" 
              x:DataType="viewModels:CalculatorViewModel"
              BackgroundColor="#333"
@@ -32,7 +33,7 @@
 
             <StackLayout BindableLayout.ItemsSource="{Binding RewardActions}">
                 <BindableLayout.ItemTemplate>
-                    <DataTemplate x:DataType="viewModels:RewardAction">
+                    <DataTemplate x:DataType="subViewModels:RewardActionSubViewModel">
                         <Grid ColumnDefinitions="*, Auto" Padding="20,0">
                             <Label Grid.Column="0" Style="{StaticResource ObjectiveLabelStyle}" Text="{Binding Text}">
                                 <Label.GestureRecognizers>

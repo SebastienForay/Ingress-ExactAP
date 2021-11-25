@@ -30,8 +30,8 @@
     </Shell.Resources>
 
     <TabBar>
-        <ShellContent Title="Calculator" Icon="icon_about.png" Route="CalculatorView" ContentTemplate="{DataTemplate local:CalculatorView}" />
-        <ShellContent Title="Settings" Icon="icon_feed.png" Route="SettingsView" ContentTemplate="{DataTemplate local:SettingsView}" />
+        <ShellContent Title="Calculator" Icon="icon_feed.png" Route="CalculatorView" ContentTemplate="{DataTemplate local:CalculatorView}" />
+        <ShellContent Title="Settings" Icon="icon_about.png" Route="SettingsView" ContentTemplate="{DataTemplate local:SettingsView}" />
     </TabBar>
 
     <!--
