@@ -8,7 +8,13 @@ namespace Fr.Fisher01.IngressExactAp
 {
     public partial class App : Application
     {
-        public static ObservableCollection<RewardActionSubViewModel> RewardActions { get; set; }
+        private static ObservableCollection<RewardActionSubViewModel> _rewardActions;
+        public static ObservableCollection<RewardActionSubViewModel> RewardActions
+        {
+            get => _rewardActions;
+            set => _rewardActions = new ObservableCollection<RewardActionSubViewModel>(
+                value.OrderByDescending(x => x.ApGain)); // This ensure list is ordered correctly;
+        }
 
         public App()
         {
@@ -25,7 +31,7 @@ namespace Fr.Fisher01.IngressExactAp
                 new(ActionType.Hack, "Hack Enemy", 100),
                 new(ActionType.UpgradeReso, "Upgrade", 65),
                 new(ActionType.Recharge, "Recharge", 65) // because au SARS-CoV-2 pandemic, else it should be 10 by default
-            }.OrderByDescending(x => x.ApGain).ToList()); // This ensure list is ordered correctly
+            });
 
             MainPage = new AppShell();
         }
