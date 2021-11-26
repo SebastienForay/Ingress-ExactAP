@@ -4,6 +4,11 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <ProduceReferenceAssembly>true</ProduceReferenceAssembly>
     <LangVersion>9</LangVersion>
+    <Version>1.1.0</Version>
+    <Authors>Sébastien - fisher01</Authors>
+    <Company />
+    <Product>Fr.Fisher01.IngressExactAp</Product>
+    <Copyright>Copyright © Sébastien FORAY 2021</Copyright>
   </PropertyGroup>
 
   <ItemGroup>
