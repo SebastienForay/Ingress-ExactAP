@@ -28,9 +28,9 @@ namespace Fr.Fisher01.IngressExactAp
                 new(ActionType.Complete8ThReso, "Complete", 250 + 125),
                 new(ActionType.CreateLink, "Link", 313),
                 new(ActionType.Deploy, "Deploy", 125),
-                new(ActionType.Hack, "Hack Enemy", 100),
+                new(ActionType.Hack, "Hack Enemy (!)", 100),
                 new(ActionType.UpgradeReso, "Upgrade", 65),
-                new(ActionType.Recharge, "Recharge", 65) // because au SARS-CoV-2 pandemic, else it should be 10 by default
+                new(ActionType.Recharge, "Recharge", 65) // because of SARS-CoV-2 pandemic, else it should be 10 by default
             });
 
             MainPage = new AppShell();
