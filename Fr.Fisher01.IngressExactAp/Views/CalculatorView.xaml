@@ -22,29 +22,53 @@
                                              Text="{Binding TargetApString}" />
             </StackLayout>
 
-            <StackLayout Orientation="Horizontal" HorizontalOptions="Center" Margin="0,0,0,15" Spacing="20">
-                <Label Text="Double AP mode" VerticalTextAlignment="Center">
+            <Grid ColumnDefinitions="*, *" RowDefinitions="Auto, Auto" HorizontalOptions="Center" Margin="0,0,0,15">
+
+                <Label Grid.Column="0" Text="Double AP mode" VerticalTextAlignment="Center">
                     <Label.GestureRecognizers>
                         <TapGestureRecognizer Tapped="DoubleApLabel_TapGestureRecognizer_OnTapped"/>
                     </Label.GestureRecognizers>
                 </Label>
-                <Switch IsToggled="{Binding IsDoubleApEnabled}" ThumbColor="LightGray" OnColor="White"/>
-            </StackLayout>
+                <Switch Grid.Column="1" IsToggled="{Binding IsDoubleApEnabled}" ThumbColor="LightGray" OnColor="White"/>
+
+                
+                <Label Grid.Column="0" Grid.Row="1" Text="APEX activated" VerticalTextAlignment="Center">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="ApexLabel_TapGestureRecognizer_OnTapped"/>
+                    </Label.GestureRecognizers>
+                </Label>
+                <Switch Grid.Column="1" Grid.Row="1" IsToggled="{Binding IsApexEnabled}" ThumbColor="LightGray" OnColor="White"/>
+            </Grid>
 
             <StackLayout BindableLayout.ItemsSource="{Binding RewardActions}">
                 <BindableLayout.ItemTemplate>
                     <DataTemplate x:DataType="subViewModels:RewardActionSubViewModel">
-                        <Grid ColumnDefinitions="*, Auto" Padding="20,0">
-                            <Label Grid.Column="0" Style="{StaticResource ObjectiveLabelStyle}" Text="{Binding Text}">
+                        <Grid ColumnDefinitions="Auto, *, Auto" Padding="0,0,20,0">
+                            <CheckBox Grid.Column="0" IsChecked="{Binding IsEnabled}" CheckedChanged="CheckBox_OnCheckedChanged"/>
+
+                            <Label Grid.Column="1" Style="{StaticResource ObjectiveLabelStyle}" Text="{Binding Text}" VerticalTextAlignment="Center">
                                 <Label.GestureRecognizers>
                                     <TapGestureRecognizer Command="{Binding BindingContext.ShowTipCommand, Source={x:Reference This}}" CommandParameter="{Binding .}"/>
                                 </Label.GestureRecognizers>
+                                
+                                <Label.Triggers>
+                                    <DataTrigger TargetType="Label" Binding="{Binding IsEnabled}" Value="False">
+                                        <Setter Property="TextColor" Value="#777"/>
+                                    </DataTrigger>
+                                </Label.Triggers>
                             </Label>
-                            <Label Grid.Column="1" Style="{StaticResource ObjectiveLabelStyle}" Text="{Binding Count, StringFormat='x {0}'}">
+
+                            <Label Grid.Column="2" Style="{StaticResource ObjectiveLabelStyle}" Text="{Binding Count, StringFormat='x {0}'}" VerticalTextAlignment="Center">
                                 <Label.GestureRecognizers>
                                     <TapGestureRecognizer Command="{Binding BindingContext.PickNumberCommand, Source={x:Reference This}}" CommandParameter="{Binding .}"/>
                                     <TapGestureRecognizer NumberOfTapsRequired="2" Command="{Binding BindingContext.ActionDoneOnceCommand, Source={x:Reference This}}" CommandParameter="{Binding .}"/>
                                 </Label.GestureRecognizers>
+                                
+                                <Label.Triggers>
+                                    <DataTrigger TargetType="Label" Binding="{Binding IsEnabled}" Value="False">
+                                        <Setter Property="TextColor" Value="#777"/>
+                                    </DataTrigger>
+                                </Label.Triggers>
                             </Label>
                         </Grid>
                     </DataTemplate>

@@ -45,7 +45,10 @@
                     </BindableLayout.ItemTemplate>
                 </StackLayout>
 
-                <Button Text="Save" Command="{Binding SaveCommand}"/>
+                <Grid ColumnDefinitions="*,*">
+                    <Button Grid.Column="0" Text="Reset" Command="{Binding ResetCommand}"/>
+                    <Button Grid.Column="1" Text="Save" Command="{Binding SaveCommand}"/>
+                </Grid>
             </StackLayout>
 
         </ScrollView>

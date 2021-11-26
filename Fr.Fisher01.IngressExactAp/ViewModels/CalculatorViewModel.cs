@@ -30,6 +30,7 @@ namespace Fr.Fisher01.IngressExactAp.ViewModels
         public string CurrentApString { get; set; }
         public string TargetApString { get; set; }
         public bool IsDoubleApEnabled { get; set; }
+        public bool IsApexEnabled { get; set; }
 
         #endregion
 
@@ -41,12 +42,12 @@ namespace Fr.Fisher01.IngressExactAp.ViewModels
 
         private void ShowTip(RewardActionSubViewModel action)
         {
-            Dialogs.Alert(GetTipForActionType(action.Type));
+            Dialogs.Alert(action.GetTip());
         }
 
         private void PickNumber(RewardActionSubViewModel action)
         {
-
+            // TODO
         }
 
         private void ActionDoneOnce(RewardActionSubViewModel action)
@@ -69,12 +70,17 @@ namespace Fr.Fisher01.IngressExactAp.ViewModels
         {
             if (e.PropertyName == nameof(IsDoubleApEnabled))
             {
-                foreach (var action in RewardActions) 
-                    action.Modifier = IsDoubleApEnabled ? 2 : 1;
+                foreach (var action in RewardActions)
+                    action.Modifier = IsDoubleApEnabled ? IsApexEnabled ? 4 : 2 : 1;
             }
 
-            if (e.PropertyName is nameof(IsDoubleApEnabled) or nameof(CurrentApString) or nameof(TargetApString) or nameof(RewardActions))
-                Refresh();
+            if (e.PropertyName == nameof(IsApexEnabled))
+            {
+                foreach (var action in RewardActions)
+                    action.Modifier = IsApexEnabled ? IsDoubleApEnabled ? 4 : 2 : 1;
+            }
+
+            Refresh();
         }
 
         private void ReloadData()
@@ -88,7 +94,7 @@ namespace Fr.Fisher01.IngressExactAp.ViewModels
         private int _targetAp = 0;
         private int _retries = 0;
         
-        private void Refresh()
+        public void Refresh()
         {
             _success = false;
 
@@ -107,7 +113,7 @@ namespace Fr.Fisher01.IngressExactAp.ViewModels
             this.SetCounters(0);
             var goal = _goalAp = _targetAp - _currentAp;
 
-            foreach (var action in RewardActions.Where(x => x.IsLocked))
+            foreach (var action in RewardActions.Where(x => x.IsLocked && x.IsEnabled))
                 goal -= action.ApGainWithModifier * action.LockedValue;
 
             _retries = 0;
@@ -132,13 +138,16 @@ namespace Fr.Fisher01.IngressExactAp.ViewModels
             if (remainingAp == 0)
                 return true;
 
+            if (actionIndex >= RewardActions.Count)
+                return false;
+
             if (RewardActions[actionIndex].Type == ActionType.Recharge && 
                 remainingAp % RewardActions[actionIndex].ApGainWithModifier != 0)
                 return false;
 
             if (actionIndex < RewardActions.Count)
             {
-                if (RewardActions[actionIndex].IsLocked) {
+                if (RewardActions[actionIndex].IsLocked || !RewardActions[actionIndex].IsEnabled) {
                     return RecurseCalculateAp(remainingAp, actionIndex + 1);
                 }
                 
@@ -161,23 +170,6 @@ namespace Fr.Fisher01.IngressExactAp.ViewModels
         {
             foreach (var action in RewardActions.Where(x => x.IsLocked is false)) 
                 action.Count = count;
-        }
-
-        private string GetTipForActionType(ActionType actionType)
-        {
-            return actionType switch
-            {
-                ActionType.Capture => "Capture portal by deploying one and only one resonator",
-                ActionType.Deploy => "Deploy a mod or a resonator",
-                ActionType.Complete8ThReso => "Deploy the 8th resonator",
-                ActionType.CreateLink => "Create a link without creating a control field",
-                ActionType.CreateField => "Create one link that creates one control field",
-                ActionType.MultiField => "Create one link that creates two control fields at the same time",
-                ActionType.Hack => "Hack an enemy portal",
-                ActionType.UpgradeReso => "Upgrade a resonator",
-                ActionType.Recharge => "Recharge portal once",
-                _ => $"Unknown action {actionType}"
-            };
         }
     }
 }

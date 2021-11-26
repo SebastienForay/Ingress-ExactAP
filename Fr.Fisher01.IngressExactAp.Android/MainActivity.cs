@@ -1,4 +1,4 @@
-﻿using Acr.UserDialogs;
+using Acr.UserDialogs;
 using Android.App;
 using Android.Content.PM;
 using Android.OS;
@@ -15,7 +15,8 @@ namespace Fr.Fisher01.IngressExactAp.Droid
         MainLauncher = true,
         ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | 
                                ConfigChanges.UiMode | ConfigChanges.ScreenLayout | 
-                               ConfigChanges.SmallestScreenSize )]
+                               ConfigChanges.SmallestScreenSize,
+        ScreenOrientation = ScreenOrientation.Portrait)]
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
     {
         protected override void OnCreate(Bundle bundle)
