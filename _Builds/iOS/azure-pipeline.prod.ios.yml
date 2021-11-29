@@ -55,6 +55,7 @@ steps:
   inputs:
     sourcePath: '$(build.SourcesDirectory)/Fr.Fisher01.IngressExactAP.iOS/Info.plist'
     versionCodeOption: 'timestamp'
+    versionName: 
     printFile: true
 
 # Build Xamarin.iOS app
