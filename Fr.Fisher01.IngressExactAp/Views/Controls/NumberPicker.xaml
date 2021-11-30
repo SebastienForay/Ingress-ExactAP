@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Fr.Fisher01.IngressExactAp.Views.Controls.NumberPicker"
+             x:Name="This">
+
+    <ContentView.Content>
+
+        <Frame Padding="1,1,1.5,1">
+
+            <Grid ColumnDefinitions="30,Auto,30"
+                  BackgroundColor="White" 
+                  ColumnSpacing="1">
+
+                <ContentView Grid.Column="0" BackgroundColor="#333">
+                    <Label Text="-" VerticalOptions="Center" HorizontalOptions="Center" Padding="5">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="MinusLabel_OnTapped"/>
+                        </Label.GestureRecognizers>
+                    </Label>
+                </ContentView>
+                <ContentView Grid.Column="1" BackgroundColor="#333">
+                    <Label Text="{Binding Count, Source={x:Reference This}}" VerticalOptions="Center" HorizontalOptions="Center" Padding="10,5"/>
+                </ContentView>
+
+                <ContentView Grid.Column="2" BackgroundColor="#333">
+                    <Label Text="+" VerticalOptions="Center" HorizontalOptions="Center" Padding="5">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="PlusLabel_OnTapped"/>
+                        </Label.GestureRecognizers>
+                    </Label>
+                </ContentView>
+
+            </Grid>
+        </Frame>
+
+  </ContentView.Content>
+</ContentView>

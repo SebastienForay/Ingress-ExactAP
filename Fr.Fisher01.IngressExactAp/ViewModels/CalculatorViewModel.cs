@@ -6,12 +6,13 @@ using System.Globalization;
 using System.Linq;
 using System.Windows.Input;
 using Xamarin.Forms;
-using ActionType = Fr.Fisher01.IngressExactAp.ViewModels.SubViewModels.RewardActionSubViewModel.ActionType;
 
 namespace Fr.Fisher01.IngressExactAp.ViewModels
 {
     public class CalculatorViewModel : BaseViewModel
     {
+        private const int MAX_RETRIES = 100000;
+
         public CalculatorViewModel(IUserDialogs dialogs) : base(dialogs)
         {
             this.PropertyChanged += CalculatorViewModel_PropertyChanged;
@@ -30,7 +31,7 @@ namespace Fr.Fisher01.IngressExactAp.ViewModels
         public string CurrentApString { get; set; }
         public string TargetApString { get; set; }
         public bool IsDoubleApEnabled { get; set; }
-        public bool IsApexEnabled { get; set; }
+        public int ApexCount { get; set; }
 
         #endregion
 
@@ -68,16 +69,18 @@ namespace Fr.Fisher01.IngressExactAp.ViewModels
         
         private void CalculatorViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
+            _isApexEnabled = ApexCount > 0;
+
             if (e.PropertyName == nameof(IsDoubleApEnabled))
             {
                 foreach (var action in RewardActions)
-                    action.Modifier = IsDoubleApEnabled ? IsApexEnabled ? 4 : 2 : 1;
+                    action.Modifier = IsDoubleApEnabled ? _isApexEnabled ? 4 : 2 : 1;
             }
 
-            if (e.PropertyName == nameof(IsApexEnabled))
+            if (e.PropertyName == nameof(ApexCount))
             {
                 foreach (var action in RewardActions)
-                    action.Modifier = IsApexEnabled ? IsDoubleApEnabled ? 4 : 2 : 1;
+                    action.Modifier = _isApexEnabled ? IsDoubleApEnabled ? 4 : 2 : 1;
             }
 
             Refresh();
@@ -88,12 +91,13 @@ namespace Fr.Fisher01.IngressExactAp.ViewModels
             RewardActions = new ObservableCollection<RewardActionSubViewModel>(App.RewardActions);
         }
 
+        private bool _isApexEnabled = false;
         private bool _success = false;
         private int _goalAp = 0;
         private int _currentAp = 0;
         private int _targetAp = 0;
         private int _retries = 0;
-        
+
         public void Refresh()
         {
             _success = false;
@@ -116,17 +120,20 @@ namespace Fr.Fisher01.IngressExactAp.ViewModels
             foreach (var action in RewardActions.Where(x => x.IsLocked && x.IsEnabled))
                 goal -= action.ApGainWithModifier * action.LockedValue;
 
+            if (_isApexEnabled)
+                goal -= ApexCount * 1000;
+
             _retries = 0;
-            if ((!IsDoubleApEnabled || _goalAp % 2 == 0) && goal >= 0 && RecurseCalculateAp(goal)) {
+            if (((!IsDoubleApEnabled && ApexCount == 0) || _goalAp % 2 == 0) && goal >= 0 && RecurseCalculateAp(goal)) {
                 _success = true;
             }
             else
             {
                 this.SetCounters(-1);
 
-                if (_retries > 10000)
+                if (_retries >= MAX_RETRIES)
                 {
-                    // Too many retry
+                    Dialogs.Alert("Your current values can't be used to find a solution");
                 }
             }
         }
@@ -141,7 +148,7 @@ namespace Fr.Fisher01.IngressExactAp.ViewModels
             if (actionIndex >= RewardActions.Count)
                 return false;
 
-            if (RewardActions[actionIndex].Type == ActionType.Recharge && 
+            if (actionIndex == (RewardActions.Count - 1) && 
                 remainingAp % RewardActions[actionIndex].ApGainWithModifier != 0)
                 return false;
 
@@ -152,7 +159,7 @@ namespace Fr.Fisher01.IngressExactAp.ViewModels
                 }
                 
                 var remains = remainingAp % RewardActions[actionIndex].ApGainWithModifier;
-                while (remains <= remainingAp && _retries < 100000)
+                while (remains <= remainingAp && _retries < MAX_RETRIES)
                 {
                     RewardActions[actionIndex].Count = (remainingAp - remains) / RewardActions[actionIndex].ApGainWithModifier;
                     

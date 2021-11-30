@@ -6,23 +6,26 @@
              xmlns:subViewModels="clr-namespace:Fr.Fisher01.IngressExactAp.ViewModels.SubViewModels;assembly=Fr.Fisher01.IngressExactAp"
              x:Class="Fr.Fisher01.IngressExactAp.Views.CalculatorView" x:Name="This" 
              x:DataType="viewModels:CalculatorViewModel"
-             BackgroundColor="#333"
-             Padding="40">
+             BackgroundColor="#333">
     
     <ContentPage.Content>
-        
-        <StackLayout>
-            <StackLayout Spacing="25" Padding="0,20">
-                <controls:FloatingLabelEntry Title="Current AP" HorizontalOptions="CenterAndExpand" Margin="0"
+    
+        <StackLayout AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0,0,1,1"
+                 Padding="40">
+
+            <Grid RowDefinitions="45, 15, 45" Padding="0, 20" HorizontalOptions="FillAndExpand">
+                <controls:FloatingLabelEntry Grid.Row="0" Title="Current AP"
                                              Keyboard="Numeric"
+                                             Margin="0"
                                              Text="{Binding CurrentApString}" />
 
-                <controls:FloatingLabelEntry Title="Target AP" HorizontalOptions="CenterAndExpand" Margin="0"
+                <controls:FloatingLabelEntry Grid.Row="2" Title="Target AP"
                                              Keyboard="Numeric"
+                                             Margin="0"
                                              Text="{Binding TargetApString}" />
-            </StackLayout>
+            </Grid>
 
-            <Grid ColumnDefinitions="*, *" RowDefinitions="Auto, Auto" HorizontalOptions="Center" Margin="0,0,0,15">
+            <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto" HorizontalOptions="Center" Margin="0,0,0,15">
 
                 <Label Grid.Column="0" Text="Double AP mode" VerticalTextAlignment="Center">
                     <Label.GestureRecognizers>
@@ -31,49 +34,50 @@
                 </Label>
                 <Switch Grid.Column="1" IsToggled="{Binding IsDoubleApEnabled}" ThumbColor="LightGray" OnColor="White"/>
 
-                
-                <Label Grid.Column="0" Grid.Row="1" Text="APEX activated" VerticalTextAlignment="Center">
-                    <Label.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="ApexLabel_TapGestureRecognizer_OnTapped"/>
-                    </Label.GestureRecognizers>
+                <Label Grid.Column="0" Grid.Row="1" VerticalTextAlignment="Center" TextType="Html">
+                    <Label.Text><![CDATA[APEX activated<br>(+1000AP each)]]></Label.Text>
                 </Label>
-                <Switch Grid.Column="1" Grid.Row="1" IsToggled="{Binding IsApexEnabled}" ThumbColor="LightGray" OnColor="White"/>
+                <controls:NumberPicker Grid.Column="1" Grid.Row="1" VerticalOptions="Center"
+                                       Count="{Binding ApexCount, Mode=OneWayToSource}"/>
             </Grid>
 
-            <StackLayout BindableLayout.ItemsSource="{Binding RewardActions}">
-                <BindableLayout.ItemTemplate>
-                    <DataTemplate x:DataType="subViewModels:RewardActionSubViewModel">
-                        <Grid ColumnDefinitions="Auto, *, Auto" Padding="0,0,20,0">
-                            <CheckBox Grid.Column="0" IsChecked="{Binding IsEnabled}" CheckedChanged="CheckBox_OnCheckedChanged"/>
+            <ScrollView>
+                <StackLayout BindableLayout.ItemsSource="{Binding RewardActions}">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="subViewModels:RewardActionSubViewModel">
+                            <Grid ColumnDefinitions="Auto, *, Auto" Padding="0,0,20,0">
+                                <CheckBox Grid.Column="0" IsChecked="{Binding IsEnabled}" CheckedChanged="CheckBox_OnCheckedChanged"/>
 
-                            <Label Grid.Column="1" Style="{StaticResource ObjectiveLabelStyle}" Text="{Binding Text}" VerticalTextAlignment="Center">
-                                <Label.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding BindingContext.ShowTipCommand, Source={x:Reference This}}" CommandParameter="{Binding .}"/>
-                                </Label.GestureRecognizers>
-                                
-                                <Label.Triggers>
-                                    <DataTrigger TargetType="Label" Binding="{Binding IsEnabled}" Value="False">
-                                        <Setter Property="TextColor" Value="#777"/>
-                                    </DataTrigger>
-                                </Label.Triggers>
-                            </Label>
+                                <Label Grid.Column="1" Style="{StaticResource ObjectiveLabelStyle}" Text="{Binding Text}" VerticalTextAlignment="Center">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding BindingContext.ShowTipCommand, Source={x:Reference This}}" CommandParameter="{Binding .}"/>
+                                    </Label.GestureRecognizers>
+                                    
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsEnabled}" Value="False">
+                                            <Setter Property="TextColor" Value="#777"/>
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
 
-                            <Label Grid.Column="2" Style="{StaticResource ObjectiveLabelStyle}" Text="{Binding Count, StringFormat='x {0}'}" VerticalTextAlignment="Center">
-                                <Label.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding BindingContext.PickNumberCommand, Source={x:Reference This}}" CommandParameter="{Binding .}"/>
-                                    <TapGestureRecognizer NumberOfTapsRequired="2" Command="{Binding BindingContext.ActionDoneOnceCommand, Source={x:Reference This}}" CommandParameter="{Binding .}"/>
-                                </Label.GestureRecognizers>
-                                
-                                <Label.Triggers>
-                                    <DataTrigger TargetType="Label" Binding="{Binding IsEnabled}" Value="False">
-                                        <Setter Property="TextColor" Value="#777"/>
-                                    </DataTrigger>
-                                </Label.Triggers>
-                            </Label>
-                        </Grid>
-                    </DataTemplate>
-                </BindableLayout.ItemTemplate>
-            </StackLayout>
+                                <Label Grid.Column="2" Style="{StaticResource ObjectiveLabelStyle}" Text="{Binding Count, StringFormat='x {0}'}" VerticalTextAlignment="Center">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding BindingContext.PickNumberCommand, Source={x:Reference This}}" CommandParameter="{Binding .}"/>
+                                        <TapGestureRecognizer NumberOfTapsRequired="2" Command="{Binding BindingContext.ActionDoneOnceCommand, Source={x:Reference This}}" CommandParameter="{Binding .}"/>
+                                    </Label.GestureRecognizers>
+                                    
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsEnabled}" Value="False">
+                                            <Setter Property="TextColor" Value="#777"/>
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+                            </Grid>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </StackLayout>
+            </ScrollView>
+
         </StackLayout>
 
     </ContentPage.Content>

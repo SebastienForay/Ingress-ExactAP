@@ -29,11 +29,6 @@ namespace Fr.Fisher01.IngressExactAp.Views
             _viewModel.IsDoubleApEnabled = !_viewModel.IsDoubleApEnabled;
         }
 
-        private void ApexLabel_TapGestureRecognizer_OnTapped(object sender, EventArgs e)
-        {
-            _viewModel.IsApexEnabled = !_viewModel.IsApexEnabled;
-        }
-
         private void CheckBox_OnCheckedChanged(object sender, CheckedChangedEventArgs e)
         {
             _viewModel.Refresh();

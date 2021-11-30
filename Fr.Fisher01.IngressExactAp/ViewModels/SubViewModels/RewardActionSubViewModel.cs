@@ -12,7 +12,10 @@
             MultiField,
             Hack,
             UpgradeReso,
-            Recharge
+            Recharge,
+            Scan,
+            Boost,
+            Glyph
         }
 
         public ActionType Type { get; }
@@ -37,7 +40,7 @@
         public int LockedValue { get; set; }
         public bool IsLocked { get; set; }
         public bool IsEnabled { get; set; } = true;
-        public bool HasExtraTip => Type is ActionType.Complete8ThReso or ActionType.CreateField or ActionType.MultiField or ActionType.Recharge;
+        public bool HasExtraTip => GetExtraTip() != null;
 
         #endregion
 
@@ -59,6 +62,10 @@
                 ActionType.Hack => "Hack an enemy portal (it must NOT be your first day hack !)",
                 ActionType.UpgradeReso => "Upgrade a resonator",
                 ActionType.Recharge => "Recharge portal once",
+                ActionType.Scan => "Submit a portal scan",
+                ActionType.Boost => "Use or deploy a Boost (Beacon, Firework, Fracker)",
+                ActionType.Glyph => $"Complete {(Count > 0 ? Count : "n")} glyphs in failed sequences\r\n" +
+                                    "(at least one glyph must be failed in each sequence. Sequence must be at least 2 glyphs long)",
                 _ => $"Unknown action {Type}"
             };
         }
@@ -71,6 +78,9 @@
                 ActionType.MultiField => "(2 * field) + link = (2 * 1250) + 313",
                 ActionType.Complete8ThReso => "deploy + bonus = 125 + 250",
                 ActionType.Recharge => "Because of SARS-CoV-2 pandemic it's 65, else it should be 10 by default",
+                ActionType.Glyph => "50 AP per correct glyph.\r\n" +
+                                    "Rewarded AP is independant from first hack of the day which gives 500 AP",
+                ActionType.Hack => "Rewarded AP is independant from first hack of the day which gives 500 AP",
                 _ => null
             };
         }
