@@ -25,12 +25,15 @@ namespace Fr.Fisher01.IngressExactAp
                 new(ActionType.MultiField, "Multi field", (1250 * 2) + 313),
                 new(ActionType.CreateField, "Field", 1250 + 313),
                 new(ActionType.Capture, "Capture", 500 + 125),
+                new(ActionType.Scan, "Submit scan", 500) { IsEnabled = false },
+                new(ActionType.Boost, "Deploy/use Boost", 500) { IsEnabled = false },
                 new(ActionType.Complete8ThReso, "Complete", 250 + 125),
                 new(ActionType.CreateLink, "Link", 313),
                 new(ActionType.Deploy, "Deploy", 125),
-                new(ActionType.Hack, "Hack Enemy (!)", 100),
+                new(ActionType.Hack, "Hack Enemy", 100),
                 new(ActionType.UpgradeReso, "Upgrade", 65),
-                new(ActionType.Recharge, "Recharge", 65) // because of SARS-CoV-2 pandemic, else it should be 10 by default
+                new(ActionType.Recharge, "Recharge", 65), // because of SARS-CoV-2 pandemic, else it should be 10 by default
+                new(ActionType.Glyph, "Glyphs in failed sequence", 50) { IsEnabled = false }
             });
 
             MainPage = new AppShell();
